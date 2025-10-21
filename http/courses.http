@@ -1,0 +1,145 @@
+### Course Management API Tests
+
+### 1. Create a new course
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "CS101",
+  "title": "Introduction to Computer Science",
+  "description": "A comprehensive introduction to computer science fundamentals",
+  "credits": 3,
+  "lecturerId": 1,
+  "startDate": "2024-01-15",
+  "endDate": "2024-05-15",
+  "capacity": 30,
+  "courseMetadata": "{\"prerequisites\": [], \"department\": \"Computer Science\"}"
+}
+
+### 2. Create another course
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "MATH201",
+  "title": "Calculus I",
+  "description": "Introduction to differential and integral calculus",
+  "credits": 4,
+  "startDate": "2024-01-15",
+  "endDate": "2024-05-15",
+  "capacity": 25,
+  "courseMetadata": "{\"prerequisites\": [\"MATH101\"], \"department\": \"Mathematics\"}"
+}
+
+### 3. Get all courses (paginated)
+GET http://localhost:8080/api/v1/courses?page=0&size=10&sort=title,asc
+
+### 4. Get course by ID
+GET http://localhost:8080/api/v1/courses/1
+
+### 5. Get course by code
+GET http://localhost:8080/api/v1/courses/code/CS101
+
+### 6. Search courses by title
+GET http://localhost:8080/api/v1/courses/search?title=Computer&page=0&size=10
+
+### 7. Get courses by lecturer
+GET http://localhost:8080/api/v1/courses/lecturer/1?page=0&size=10
+
+### 8. Get upcoming courses
+GET http://localhost:8080/api/v1/courses/upcoming?page=0&size=10
+
+### 9. Get courses by date range
+GET http://localhost:8080/api/v1/courses/date-range?startDate=2024-01-01&endDate=2024-12-31&page=0&size=10
+
+### 10. Get courses by credits
+GET http://localhost:8080/api/v1/courses/credits/3?page=0&size=10
+
+### 11. Get courses by credits range
+GET http://localhost:8080/api/v1/courses/credits-range?minCredits=2&maxCredits=4&page=0&size=10
+
+### 12. Get courses by minimum capacity
+GET http://localhost:8080/api/v1/courses/capacity/20?page=0&size=10
+
+### 13. Update course
+PUT http://localhost:8080/api/v1/courses/1
+Content-Type: application/json
+
+{
+  "title": "Advanced Introduction to Computer Science",
+  "description": "An advanced comprehensive introduction to computer science fundamentals",
+  "credits": 4,
+  "capacity": 35
+}
+
+### 14. Update course with new lecturer
+PUT http://localhost:8080/api/v1/courses/2
+Content-Type: application/json
+
+{
+  "lecturerId": 2,
+  "courseMetadata": "{\"prerequisites\": [\"MATH101\"], \"department\": \"Mathematics\", \"updated\": true}"
+}
+
+### 15. Delete course
+DELETE http://localhost:8080/api/v1/courses/2
+
+### 16. Try to create course with duplicate code (should fail)
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "CS101",
+  "title": "Duplicate Course",
+  "description": "This should fail",
+  "credits": 2
+}
+
+### 17. Try to get non-existent course (should fail)
+GET http://localhost:8080/api/v1/courses/999
+
+### 18. Try to update non-existent course (should fail)
+PUT http://localhost:8080/api/v1/courses/999
+Content-Type: application/json
+
+{
+  "title": "This should fail"
+}
+
+### 19. Try to delete non-existent course (should fail)
+DELETE http://localhost:8080/api/v1/courses/999
+
+### 20. Create course with invalid dates (should fail)
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "INVALID",
+  "title": "Invalid Course",
+  "description": "This should fail",
+  "startDate": "2024-12-31",
+  "endDate": "2024-01-01",
+  "credits": 2
+}
+
+### 21. Create course with invalid credits (should fail)
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "INVALID2",
+  "title": "Invalid Course 2",
+  "description": "This should fail",
+  "credits": 15
+}
+
+### 22. Create course with invalid capacity (should fail)
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "INVALID3",
+  "title": "Invalid Course 3",
+  "description": "This should fail",
+  "capacity": 0
+}

@@ -1,0 +1,272 @@
+### Complete Business Workflow Test
+### This file tests the complete student registration system workflow
+
+### ===========================================
+### PHASE 1: SETUP - Create Users and Roles
+### ===========================================
+
+### 1. Create Admin User
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "User",
+  "email": "admin@university.edu",
+  "password": "admin123",
+  "role": "Admin"
+}
+
+### 2. Create Lecturer
+POST http://localhost:8080/api/v1/lecturers
+Content-Type: application/json
+
+{
+  "firstName": "Dr. Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@university.edu",
+  "password": "lecturer123",
+  "specialization": "Computer Science",
+  "phoneNumber": "+1234567890",
+  "hireDate": "2020-01-15"
+}
+
+### 3. Create Student 1
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson",
+  "email": "alice.johnson@university.edu",
+  "password": "student123",
+  "dateOfBirth": "2000-05-15",
+  "phoneNumber": "+1987654321",
+  "address": "123 University Ave, Campus City, State 12345",
+  "enrollmentDate": "2024-01-15"
+}
+
+### 4. Create Student 2
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "Bob",
+  "lastName": "Wilson",
+  "email": "bob.wilson@university.edu",
+  "password": "student123",
+  "dateOfBirth": "1999-08-22",
+  "phoneNumber": "+1122334455",
+  "address": "456 College St, Campus City, State 12345",
+  "enrollmentDate": "2024-01-20"
+}
+
+### ===========================================
+### PHASE 2: COURSE MANAGEMENT
+### ===========================================
+
+### 5. Create Course 1 - Computer Science
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "CS101",
+  "title": "Introduction to Computer Science",
+  "description": "A comprehensive introduction to computer science fundamentals including programming, algorithms, and data structures",
+  "credits": 3,
+  "lecturerId": 1,
+  "startDate": "2024-09-01",
+  "endDate": "2024-12-15",
+  "capacity": 30,
+  "courseMetadata": "{\"prerequisites\": [], \"department\": \"Computer Science\", \"difficulty\": \"beginner\"}"
+}
+
+### 6. Create Course 2 - Mathematics
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "MATH201",
+  "title": "Calculus I",
+  "description": "Introduction to differential and integral calculus with applications",
+  "credits": 4,
+  "startDate": "2024-09-01",
+  "endDate": "2024-12-15",
+  "capacity": 25,
+  "courseMetadata": "{\"prerequisites\": [\"MATH101\"], \"department\": \"Mathematics\", \"difficulty\": \"intermediate\"}"
+}
+
+### 7. Create Course 3 - Advanced CS
+POST http://localhost:8080/api/v1/courses
+Content-Type: application/json
+
+{
+  "courseCode": "CS301",
+  "title": "Data Structures and Algorithms",
+  "description": "Advanced study of data structures and algorithm design",
+  "credits": 4,
+  "lecturerId": 1,
+  "startDate": "2024-09-01",
+  "endDate": "2024-12-15",
+  "capacity": 20,
+  "courseMetadata": "{\"prerequisites\": [\"CS101\"], \"department\": \"Computer Science\", \"difficulty\": \"advanced\"}"
+}
+
+### ===========================================
+### PHASE 3: ENROLLMENT WORKFLOW
+### ===========================================
+
+### 8. Student 1 enrolls in CS101
+POST http://localhost:8080/api/v1/enrollments
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "courseId": 1
+}
+
+### 9. Student 1 enrolls in MATH201
+POST http://localhost:8080/api/v1/enrollments
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "courseId": 2
+}
+
+### 10. Student 2 enrolls in CS101
+POST http://localhost:8080/api/v1/enrollments
+Content-Type: application/json
+
+{
+  "studentId": 2,
+  "courseId": 1
+}
+
+### 11. Student 2 enrolls in CS301
+POST http://localhost:8080/api/v1/enrollments
+Content-Type: application/json
+
+{
+  "studentId": 2,
+  "courseId": 3
+}
+
+### ===========================================
+### PHASE 4: GRADING WORKFLOW
+### ===========================================
+
+### 12. Lecturer grades Student 1 in CS101
+PUT http://localhost:8080/api/v1/enrollments/1
+Content-Type: application/json
+
+{
+  "grade": 8.5
+}
+
+### 13. Lecturer grades Student 1 in MATH201
+PUT http://localhost:8080/api/v1/enrollments/2
+Content-Type: application/json
+
+{
+  "grade": 9.2
+}
+
+### 14. Lecturer grades Student 2 in CS101
+PUT http://localhost:8080/api/v1/enrollments/3
+Content-Type: application/json
+
+{
+  "grade": 7.8
+}
+
+### 15. Lecturer grades Student 2 in CS301
+PUT http://localhost:8080/api/v1/enrollments/4
+Content-Type: application/json
+
+{
+  "grade": 9.5
+}
+
+### ===========================================
+### PHASE 5: LECTURER DASHBOARD
+### ===========================================
+
+### 16. Lecturer views their courses
+GET http://localhost:8080/api/v1/lecturers/1/courses?page=0&size=10
+
+### 17. Lecturer views all their students
+GET http://localhost:8080/api/v1/lecturers/1/students?page=0&size=10
+
+### 18. Lecturer views students in specific course
+GET http://localhost:8080/api/v1/lecturers/1/courses/1/students?page=0&size=10
+
+### 19. Lecturer views their statistics
+GET http://localhost:8080/api/v1/lecturers/1/stats
+
+### ===========================================
+### PHASE 6: ADMIN DASHBOARD
+### ===========================================
+
+### 20. Admin views dashboard overview
+GET http://localhost:8080/api/v1/admin/dashboard
+
+### 21. Admin views all enrollments
+GET http://localhost:8080/api/v1/admin/enrollments?page=0&size=10
+
+### 22. Admin views recent enrollments
+GET http://localhost:8080/api/v1/admin/enrollments/recent?days=7&page=0&size=10
+
+### 23. Admin views active students
+GET http://localhost:8080/api/v1/admin/students/active?page=0&size=10
+
+### 24. Admin views popular courses
+GET http://localhost:8080/api/v1/admin/courses/popular?page=0&size=10
+
+### 25. Admin views enrollment trends
+GET http://localhost:8080/api/v1/admin/reports/enrollment-trends?startDate=2024-01-01&endDate=2024-12-31
+
+### ===========================================
+### PHASE 7: STUDENT DASHBOARD
+### ===========================================
+
+### 26. Student 1 views their enrollments
+GET http://localhost:8080/api/v1/enrollments/student/1?page=0&size=10
+
+### 27. Student 2 views their enrollments
+GET http://localhost:8080/api/v1/enrollments/student/2?page=0&size=10
+
+### ===========================================
+### PHASE 8: COURSE DROPPING
+### ===========================================
+
+### 28. Student 1 drops MATH201
+PUT http://localhost:8080/api/v1/enrollments/2/drop
+
+### 29. Student 2 drops CS301
+PUT http://localhost:8080/api/v1/enrollments/4/drop
+
+### ===========================================
+### PHASE 9: FINAL VERIFICATION
+### ===========================================
+
+### 30. Verify Student 1's final enrollments
+GET http://localhost:8080/api/v1/enrollments/student/1?page=0&size=10
+
+### 31. Verify Student 2's final enrollments
+GET http://localhost:8080/api/v1/enrollments/student/2?page=0&size=10
+
+### 32. Verify CS101 enrollments
+GET http://localhost:8080/api/v1/enrollments/course/1?page=0&size=10
+
+### 33. Verify MATH201 enrollments
+GET http://localhost:8080/api/v1/enrollments/course/2?page=0&size=10
+
+### 34. Verify CS301 enrollments
+GET http://localhost:8080/api/v1/enrollments/course/3?page=0&size=10
+
+### 35. Final admin dashboard check
+GET http://localhost:8080/api/v1/admin/dashboard
+
+### 36. Final enrollment statistics
+GET http://localhost:8080/api/v1/enrollments/stats

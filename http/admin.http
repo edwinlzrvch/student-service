@@ -1,0 +1,40 @@
+### Admin Dashboard API Tests
+
+### 1. Get dashboard overview
+GET http://localhost:8080/api/v1/admin/dashboard
+
+### 2. Get all enrollments (admin view)
+GET http://localhost:8080/api/v1/admin/enrollments?page=0&size=10
+
+### 3. Get recent enrollments (last 7 days)
+GET http://localhost:8080/api/v1/admin/enrollments/recent?days=7&page=0&size=10
+
+### 4. Get recent enrollments (last 30 days)
+GET http://localhost:8080/api/v1/admin/enrollments/recent?days=30&page=0&size=10
+
+### 5. Get active students
+GET http://localhost:8080/api/v1/admin/students/active?page=0&size=10
+
+### 6. Get popular courses (by enrollment count)
+GET http://localhost:8080/api/v1/admin/courses/popular?page=0&size=10
+
+### 7. Get enrollment trends (last 30 days)
+GET http://localhost:8080/api/v1/admin/reports/enrollment-trends?startDate=2024-01-01&endDate=2024-01-31
+
+### 8. Test admin dashboard with no data
+GET http://localhost:8080/api/v1/admin/dashboard
+
+### 9. Test admin enrollments with invalid pagination
+GET http://localhost:8080/api/v1/admin/enrollments?page=-1&size=0
+
+### 10. Test admin recent enrollments with invalid days
+GET http://localhost:8080/api/v1/admin/enrollments/recent?days=-1&page=0&size=10
+
+### 11. Test admin active students with invalid pagination
+GET http://localhost:8080/api/v1/admin/students/active?page=999&size=0
+
+### 12. Test admin popular courses with invalid pagination
+GET http://localhost:8080/api/v1/admin/courses/popular?page=0&size=-1
+
+### 13. Test admin enrollment trends with invalid date range
+GET http://localhost:8080/api/v1/admin/reports/enrollment-trends?startDate=2024-12-31&endDate=2024-01-01

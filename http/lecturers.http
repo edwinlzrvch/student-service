@@ -1,0 +1,70 @@
+### Lecturer Management API Tests
+
+### 1. Create a new lecturer
+POST http://localhost:8080/api/v1/lecturers
+Content-Type: application/json
+
+{
+  "firstName": "Dr. Sarah",
+  "lastName": "Johnson",
+  "email": "sarah.johnson@example.com",
+  "password": "password123",
+  "specialization": "Computer Science",
+  "phoneNumber": "+1234567890",
+  "hireDate": "2020-01-15"
+}
+
+### 2. Create another lecturer
+POST http://localhost:8080/api/v1/lecturers
+Content-Type: application/json
+
+{
+  "firstName": "Prof. Michael",
+  "lastName": "Brown",
+  "email": "michael.brown@example.com",
+  "password": "password123",
+  "specialization": "Mathematics",
+  "phoneNumber": "+1987654321",
+  "hireDate": "2019-09-01"
+}
+
+### 3. Get lecturer by ID
+GET http://localhost:8080/api/v1/lecturers/1
+
+### 4. Get all courses taught by a lecturer
+GET http://localhost:8080/api/v1/lecturers/1/courses?page=0&size=10
+
+### 5. Get all students enrolled in lecturer's courses
+GET http://localhost:8080/api/v1/lecturers/1/students?page=0&size=10
+
+### 6. Get students for a specific course taught by lecturer
+GET http://localhost:8080/api/v1/lecturers/1/courses/1/students?page=0&size=10
+
+### 7. Get lecturer statistics
+GET http://localhost:8080/api/v1/lecturers/1/stats
+
+### 8. Test getting non-existent lecturer (should fail)
+GET http://localhost:8080/api/v1/lecturers/999
+
+### 9. Test creating lecturer with duplicate email (should fail)
+POST http://localhost:8080/api/v1/lecturers
+Content-Type: application/json
+
+{
+  "firstName": "Duplicate",
+  "lastName": "Lecturer",
+  "email": "sarah.johnson@example.com",
+  "password": "password123",
+  "specialization": "Physics"
+}
+
+### 10. Test creating lecturer with invalid data (should fail)
+POST http://localhost:8080/api/v1/lecturers
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "invalid-email",
+  "password": "123"
+}

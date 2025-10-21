@@ -1,0 +1,102 @@
+### Student Management API Tests
+
+### Create a new student
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson",
+  "email": "alice.johnson@example.com",
+  "password": "password123",
+  "dateOfBirth": "2000-05-15",
+  "phoneNumber": "+1234567890",
+  "address": "123 Main St, City, State 12345",
+  "enrollmentDate": "2024-01-15"
+}
+
+### Create another student
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "Bob",
+  "lastName": "Wilson",
+  "email": "bob.wilson@example.com",
+  "password": "password123",
+  "dateOfBirth": "1999-08-22",
+  "phoneNumber": "+1987654321",
+  "address": "456 Oak Ave, City, State 54321",
+  "enrollmentDate": "2024-02-01"
+}
+
+### Get student by ID
+GET http://localhost:8080/api/v1/students/1
+
+### Get student by email
+GET http://localhost:8080/api/v1/students/email/alice.johnson@example.com
+
+### Update student
+PUT http://localhost:8080/api/v1/students/1
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson-Smith",
+  "phoneNumber": "+1111111111",
+  "address": "789 Pine St, New City, State 98765"
+}
+
+### Get all students (paginated)
+GET http://localhost:8080/api/v1/students?page=0&size=10&sort=firstName,asc
+
+### Get students by enrollment date range
+GET http://localhost:8080/api/v1/students/enrollment-date-range?startDate=2024-01-01&endDate=2024-12-31&page=0&size=10
+
+
+### Delete student
+DELETE http://localhost:8080/api/v1/students/1
+
+### Test creating student with duplicate email (should fail)
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "Duplicate",
+  "lastName": "Student",
+  "email": "alice.johnson@example.com",
+  "password": "password123",
+  "dateOfBirth": "2000-01-01",
+  "phoneNumber": "+1111111111",
+  "address": "123 Test St"
+}
+
+### Test creating student with invalid data (should fail)
+POST http://localhost:8080/api/v1/students
+Content-Type: application/json
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "invalid-email",
+  "password": "123",
+  "dateOfBirth": "invalid-date"
+}
+
+### Test getting non-existent student (should fail)
+GET http://localhost:8080/api/v1/students/999
+
+### Test updating non-existent student (should fail)
+PUT http://localhost:8080/api/v1/students/999
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "Student"
+}
+
+### Test deleting non-existent student (should fail)
+DELETE http://localhost:8080/api/v1/students/999
+
+### Test getting student by non-existent email (should fail)
+GET http://localhost:8080/api/v1/students/email/nonexistent@example.com
