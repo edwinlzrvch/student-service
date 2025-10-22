@@ -8,6 +8,8 @@ import com.course.studentservice.repository.LecturerRepository
 import com.course.studentservice.repository.CourseRepository
 import com.course.studentservice.repository.EnrollmentRepository
 import com.course.studentservice.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -47,6 +49,11 @@ class LecturerService(
         
         val savedLecturer = lecturerRepository.save(lecturer)
         return mapToDto(savedLecturer)
+    }
+    
+    fun getAllLecturers(pageable: Pageable): Page<LecturerDto> {
+        val lecturers = lecturerRepository.findAll(pageable)
+        return lecturers.map { mapToDto(it) }
     }
     
     fun getLecturerById(lecturerId: Long): LecturerDto {

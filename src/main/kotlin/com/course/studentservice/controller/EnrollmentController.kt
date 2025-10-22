@@ -6,23 +6,37 @@ import com.course.studentservice.service.EnrollmentService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
 @Tag(name = "Enrollment Management", description = "APIs for managing course enrollments")
+@SecurityRequirement(name = "bearerAuth")
 class EnrollmentController(
     private val enrollmentService: EnrollmentService
 ) {
     
+    @GetMapping
+    @Operation(summary = "Get all enrollments", description = "Retrieves a paginated list of all enrollments")
+    @ApiResponses(value = [
+        io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully")
+    ])
+    fun getAllEnrollments(pageable: Pageable): ResponseEntity<ApiResponse<Page<EnrollmentDto>>> {
+        val enrollments = enrollmentService.getAllEnrollments(pageable)
+        return ResponseEntity.ok(ApiResponse.success(enrollments, "Enrollments retrieved successfully"))
+    }
+    
     @PostMapping
     @Operation(summary = "Enroll student in course", description = "Enrolls a student in a specific course")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Student enrolled successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input or enrollment not possible"),
@@ -36,6 +50,7 @@ class EnrollmentController(
     
     @PutMapping("/{enrollmentId}/drop")
     @Operation(summary = "Drop course", description = "Allows a student to drop a course")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Course dropped successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Enrollment not found"),
@@ -48,6 +63,7 @@ class EnrollmentController(
     
     @PutMapping("/{enrollmentId}")
     @Operation(summary = "Update enrollment", description = "Updates enrollment status or grade")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollment updated successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Enrollment not found"),
@@ -63,6 +79,7 @@ class EnrollmentController(
     
     @GetMapping("/{enrollmentId}")
     @Operation(summary = "Get enrollment by ID", description = "Retrieves a specific enrollment by its ID")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollment found"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Enrollment not found")
@@ -74,6 +91,7 @@ class EnrollmentController(
     
     @GetMapping("/student/{studentId}")
     @Operation(summary = "Get student enrollments", description = "Retrieves all enrollments for a specific student")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Student not found")
@@ -88,6 +106,7 @@ class EnrollmentController(
     
     @GetMapping("/course/{courseId}")
     @Operation(summary = "Get course enrollments", description = "Retrieves all enrollments for a specific course")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Course not found")
@@ -102,6 +121,7 @@ class EnrollmentController(
     
     @GetMapping("/lecturer/{lecturerId}")
     @Operation(summary = "Get lecturer course enrollments", description = "Retrieves all enrollments for courses taught by a specific lecturer")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Lecturer not found")
@@ -116,6 +136,7 @@ class EnrollmentController(
     
     @GetMapping("/status/{status}")
     @Operation(summary = "Get enrollments by status", description = "Retrieves all enrollments with a specific status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully")
     ])
@@ -129,6 +150,7 @@ class EnrollmentController(
     
     @GetMapping("/stats")
     @Operation(summary = "Get enrollment statistics", description = "Retrieves enrollment statistics for dashboard")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
     ])

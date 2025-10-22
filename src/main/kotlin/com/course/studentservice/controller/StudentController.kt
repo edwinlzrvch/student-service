@@ -5,6 +5,7 @@ import com.course.studentservice.service.StudentService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -12,18 +13,21 @@ import org.springframework.data.domain.Pageable
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/v1/students")
 @Tag(name = "Student Management", description = "APIs for managing students")
+@SecurityRequirement(name = "bearerAuth")
 class StudentController(
     private val studentService: StudentService
 ) {
     
     @PostMapping
     @Operation(summary = "Create a new student", description = "Creates a new student with the provided information")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Student created successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -37,6 +41,7 @@ class StudentController(
     
     @GetMapping("/{id}")
     @Operation(summary = "Get student by ID", description = "Retrieves a student by their unique identifier")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Student found"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Student not found")
@@ -48,6 +53,7 @@ class StudentController(
     
     @GetMapping("/email/{email}")
     @Operation(summary = "Get student by email", description = "Retrieves a student by their email address")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Student found"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Student not found")
@@ -59,6 +65,7 @@ class StudentController(
     
     @PutMapping("/{id}")
     @Operation(summary = "Update student", description = "Updates an existing student's information")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER', 'STUDENT')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Student updated successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Student not found"),
@@ -74,6 +81,7 @@ class StudentController(
     
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete student", description = "Deletes a student by their ID")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Student deleted successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Student not found")
@@ -95,6 +103,7 @@ class StudentController(
     
     @GetMapping("/enrollment-date-range")
     @Operation(summary = "Get students by enrollment date range", description = "Retrieves students enrolled within a specific date range")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Students retrieved successfully")
     ])

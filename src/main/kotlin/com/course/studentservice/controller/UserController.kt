@@ -6,23 +6,27 @@ import com.course.studentservice.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(name = "User Management", description = "APIs for managing users")
+@SecurityRequirement(name = "bearerAuth")
 class UserController(
     private val userService: UserService
 ) {
     
     @PostMapping
     @Operation(summary = "Create a new user", description = "Creates a new user with the provided information")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "User created successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -58,6 +62,7 @@ class UserController(
     
     @PutMapping("/{id}")
     @Operation(summary = "Update user", description = "Updates an existing user's information")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User updated successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found"),
@@ -73,6 +78,7 @@ class UserController(
     
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user", description = "Deletes a user by their ID")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User deleted successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")

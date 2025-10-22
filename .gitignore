@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Database ###
+# db/ - Removed to include database setup scripts in version control

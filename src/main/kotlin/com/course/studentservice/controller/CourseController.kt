@@ -5,6 +5,7 @@ import com.course.studentservice.service.CourseService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -12,18 +13,21 @@ import org.springframework.data.domain.Pageable
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/v1/courses")
 @Tag(name = "Course Management", description = "APIs for managing courses")
+@SecurityRequirement(name = "bearerAuth")
 class CourseController(
     private val courseService: CourseService
 ) {
     
     @PostMapping
     @Operation(summary = "Create a new course", description = "Creates a new course with the provided information")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Course created successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -228,6 +232,7 @@ class CourseController(
     
     @PutMapping("/{id}")
     @Operation(summary = "Update course", description = "Updates an existing course with the provided information")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Course updated successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -250,6 +255,7 @@ class CourseController(
     
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete course", description = "Deletes a course by its ID")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER')")
     @ApiResponses(value = [
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Course deleted successfully"),
         io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Course not found")

@@ -39,12 +39,26 @@ class StudentService(
         val savedUser = userRepository.save(user)
         
         val student = Student(
-            studentId = 0,  // Will be set by @MapsId from user
+            studentId = 0,
             user = savedUser,
             dateOfBirth = request.dateOfBirth,
             phoneNumber = request.phoneNumber,
             address = request.address,
             enrollmentDate = request.enrollmentDate ?: LocalDate.now()
+        )
+        
+        val savedStudent = studentRepository.save(student)
+        return mapToDto(savedStudent)
+    }
+    
+    fun createStudentFromUser(user: User, dateOfBirth: String?): StudentDto {
+        val student = Student(
+            studentId = 0,
+            user = user,
+            dateOfBirth = dateOfBirth?.let { LocalDate.parse(it) },
+            phoneNumber = null,
+            address = null,
+            enrollmentDate = LocalDate.now()
         )
         
         val savedStudent = studentRepository.save(student)

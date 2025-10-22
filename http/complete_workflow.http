@@ -1,13 +1,81 @@
 ### Complete Business Workflow Test
-### This file tests the complete student registration system workflow
+### This file tests the complete student registration system workflow with JWT Authentication
+
+### ===========================================
+### PHASE 0: AUTHENTICATION - Get Tokens
+### ===========================================
+
+### 1. Register new student
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "New",
+  "lastName": "Student",
+  "email": "new.student@example.com",
+  "password": "password123",
+  "dateOfBirth": "2000-01-01"
+}
+
+> {%
+client.global.set("new_student_token", response.body.data.token);
+%}
+
+### 2. Login as Admin
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+> {%
+client.global.set("admin_token", response.body.data.token);
+%}
+
+### 3. Login as Lecturer
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "lecturer@example.com",
+  "password": "password123"
+}
+
+> {%
+client.global.set("lecturer_token", response.body.data.token);
+%}
+
+### 4. Login as Student
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "student@example.com",
+  "password": "password123"
+}
+
+> {%
+client.global.set("student_token", response.body.data.token);
+%}
 
 ### ===========================================
 ### PHASE 1: SETUP - Create Users and Roles
 ### ===========================================
 
-### 1. Create Admin User
+### 5. Test newly registered student access (using new student token)
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer {{new_student_token}}
+
+### 6. Test newly registered student can access courses (using new student token)
+GET http://localhost:8080/api/v1/courses
+Authorization: Bearer {{new_student_token}}
+
+### 7. Create Admin User (using admin token)
 POST http://localhost:8080/api/v1/users
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "firstName": "Admin",
@@ -17,9 +85,10 @@ Content-Type: application/json
   "role": "Admin"
 }
 
-### 2. Create Lecturer
+### 8. Create Lecturer (using admin token)
 POST http://localhost:8080/api/v1/lecturers
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "firstName": "Dr. Jane",
@@ -31,9 +100,10 @@ Content-Type: application/json
   "hireDate": "2020-01-15"
 }
 
-### 3. Create Student 1
+### 9. Create Student 1 (using admin token)
 POST http://localhost:8080/api/v1/students
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "firstName": "Alice",
@@ -46,9 +116,10 @@ Content-Type: application/json
   "enrollmentDate": "2024-01-15"
 }
 
-### 4. Create Student 2
+### 10. Create Student 2 (using admin token)
 POST http://localhost:8080/api/v1/students
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "firstName": "Bob",
@@ -65,9 +136,10 @@ Content-Type: application/json
 ### PHASE 2: COURSE MANAGEMENT
 ### ===========================================
 
-### 5. Create Course 1 - Computer Science
+### 11. Create Course 1 - Computer Science (using admin token)
 POST http://localhost:8080/api/v1/courses
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "courseCode": "CS101",
@@ -81,9 +153,10 @@ Content-Type: application/json
   "courseMetadata": "{\"prerequisites\": [], \"department\": \"Computer Science\", \"difficulty\": \"beginner\"}"
 }
 
-### 6. Create Course 2 - Mathematics
+### 12. Create Course 2 - Mathematics (using admin token)
 POST http://localhost:8080/api/v1/courses
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "courseCode": "MATH201",
@@ -96,9 +169,10 @@ Content-Type: application/json
   "courseMetadata": "{\"prerequisites\": [\"MATH101\"], \"department\": \"Mathematics\", \"difficulty\": \"intermediate\"}"
 }
 
-### 7. Create Course 3 - Advanced CS
+### 13. Create Course 3 - Advanced CS (using admin token)
 POST http://localhost:8080/api/v1/courses
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 {
   "courseCode": "CS301",
@@ -116,157 +190,257 @@ Content-Type: application/json
 ### PHASE 3: ENROLLMENT WORKFLOW
 ### ===========================================
 
-### 8. Student 1 enrolls in CS101
+### 14. Student 1 enrolls in CS101 (using student token)
 POST http://localhost:8080/api/v1/enrollments
 Content-Type: application/json
+Authorization: Bearer {{student_token}}
 
 {
   "studentId": 1,
   "courseId": 1
 }
 
-### 9. Student 1 enrolls in MATH201
+### 15. Student 1 enrolls in MATH201 (using student token)
 POST http://localhost:8080/api/v1/enrollments
 Content-Type: application/json
+Authorization: Bearer {{student_token}}
 
 {
   "studentId": 1,
   "courseId": 2
 }
 
-### 10. Student 2 enrolls in CS101
+### 16. Student 2 enrolls in CS101 (using student token)
 POST http://localhost:8080/api/v1/enrollments
 Content-Type: application/json
+Authorization: Bearer {{student_token}}
 
 {
   "studentId": 2,
   "courseId": 1
 }
 
-### 11. Student 2 enrolls in CS301
+### 17. Student 2 enrolls in CS301 (using student token)
 POST http://localhost:8080/api/v1/enrollments
 Content-Type: application/json
+Authorization: Bearer {{student_token}}
 
 {
   "studentId": 2,
   "courseId": 3
 }
 
+### 18. Newly registered student enrolls in CS101 (using new student token)
+POST http://localhost:8080/api/v1/enrollments
+Content-Type: application/json
+Authorization: Bearer {{new_student_token}}
+
+{
+  "studentId": 3,
+  "courseId": 1
+}
+
 ### ===========================================
 ### PHASE 4: GRADING WORKFLOW
 ### ===========================================
 
-### 12. Lecturer grades Student 1 in CS101
+### 19. Lecturer grades Student 1 in CS101 (using lecturer token)
 PUT http://localhost:8080/api/v1/enrollments/1
 Content-Type: application/json
+Authorization: Bearer {{lecturer_token}}
 
 {
   "grade": 8.5
 }
 
-### 13. Lecturer grades Student 1 in MATH201
+### 20. Lecturer grades Student 1 in MATH201 (using lecturer token)
 PUT http://localhost:8080/api/v1/enrollments/2
 Content-Type: application/json
+Authorization: Bearer {{lecturer_token}}
 
 {
   "grade": 9.2
 }
 
-### 14. Lecturer grades Student 2 in CS101
+### 21. Lecturer grades Student 2 in CS101 (using lecturer token)
 PUT http://localhost:8080/api/v1/enrollments/3
 Content-Type: application/json
+Authorization: Bearer {{lecturer_token}}
 
 {
   "grade": 7.8
 }
 
-### 15. Lecturer grades Student 2 in CS301
+### 22. Lecturer grades Student 2 in CS301 (using lecturer token)
 PUT http://localhost:8080/api/v1/enrollments/4
 Content-Type: application/json
+Authorization: Bearer {{lecturer_token}}
 
 {
   "grade": 9.5
+}
+
+### 23. Lecturer grades newly registered student in CS101 (using lecturer token)
+PUT http://localhost:8080/api/v1/enrollments/5
+Content-Type: application/json
+Authorization: Bearer {{lecturer_token}}
+
+{
+  "grade": 8.8
 }
 
 ### ===========================================
 ### PHASE 5: LECTURER DASHBOARD
 ### ===========================================
 
-### 16. Lecturer views their courses
+### 24. Lecturer views their courses (using lecturer token)
 GET http://localhost:8080/api/v1/lecturers/1/courses?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 17. Lecturer views all their students
+### 25. Lecturer views all their students (using lecturer token)
 GET http://localhost:8080/api/v1/lecturers/1/students?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 18. Lecturer views students in specific course
+### 26. Lecturer views students in specific course (using lecturer token)
 GET http://localhost:8080/api/v1/lecturers/1/courses/1/students?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 19. Lecturer views their statistics
+### 27. Lecturer views their statistics (using lecturer token)
 GET http://localhost:8080/api/v1/lecturers/1/stats
+Authorization: Bearer {{lecturer_token}}
 
 ### ===========================================
 ### PHASE 6: ADMIN DASHBOARD
 ### ===========================================
 
-### 20. Admin views dashboard overview
+### 28. Admin views dashboard overview (using admin token)
 GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{admin_token}}
 
-### 21. Admin views all enrollments
+### 29. Admin views all enrollments (using admin token)
 GET http://localhost:8080/api/v1/admin/enrollments?page=0&size=10
+Authorization: Bearer {{admin_token}}
 
-### 22. Admin views recent enrollments
+### 30. Admin views recent enrollments (using admin token)
 GET http://localhost:8080/api/v1/admin/enrollments/recent?days=7&page=0&size=10
+Authorization: Bearer {{admin_token}}
 
-### 23. Admin views active students
+### 31. Admin views active students (using admin token)
 GET http://localhost:8080/api/v1/admin/students/active?page=0&size=10
+Authorization: Bearer {{admin_token}}
 
-### 24. Admin views popular courses
+### 32. Admin views popular courses (using admin token)
 GET http://localhost:8080/api/v1/admin/courses/popular?page=0&size=10
+Authorization: Bearer {{admin_token}}
 
-### 25. Admin views enrollment trends
+### 33. Admin views enrollment trends (using admin token)
 GET http://localhost:8080/api/v1/admin/reports/enrollment-trends?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{admin_token}}
 
 ### ===========================================
 ### PHASE 7: STUDENT DASHBOARD
 ### ===========================================
 
-### 26. Student 1 views their enrollments
+### 34. Student 1 views their enrollments (using student token)
 GET http://localhost:8080/api/v1/enrollments/student/1?page=0&size=10
+Authorization: Bearer {{student_token}}
 
-### 27. Student 2 views their enrollments
+### 35. Student 2 views their enrollments (using student token)
 GET http://localhost:8080/api/v1/enrollments/student/2?page=0&size=10
+Authorization: Bearer {{student_token}}
+
+### 36. Newly registered student views their enrollments (using new student token)
+GET http://localhost:8080/api/v1/enrollments/student/3?page=0&size=10
+Authorization: Bearer {{new_student_token}}
 
 ### ===========================================
 ### PHASE 8: COURSE DROPPING
 ### ===========================================
 
-### 28. Student 1 drops MATH201
+### 37. Student 1 drops MATH201 (using student token)
 PUT http://localhost:8080/api/v1/enrollments/2/drop
+Authorization: Bearer {{student_token}}
 
-### 29. Student 2 drops CS301
+### 38. Student 2 drops CS301 (using student token)
 PUT http://localhost:8080/api/v1/enrollments/4/drop
+Authorization: Bearer {{student_token}}
 
 ### ===========================================
 ### PHASE 9: FINAL VERIFICATION
 ### ===========================================
 
-### 30. Verify Student 1's final enrollments
+### 39. Verify Student 1's final enrollments (using student token)
 GET http://localhost:8080/api/v1/enrollments/student/1?page=0&size=10
+Authorization: Bearer {{student_token}}
 
-### 31. Verify Student 2's final enrollments
+### 40. Verify Student 2's final enrollments (using student token)
 GET http://localhost:8080/api/v1/enrollments/student/2?page=0&size=10
+Authorization: Bearer {{student_token}}
 
-### 32. Verify CS101 enrollments
+### 41. Verify newly registered student's final enrollments (using new student token)
+GET http://localhost:8080/api/v1/enrollments/student/3?page=0&size=10
+Authorization: Bearer {{new_student_token}}
+
+### 42. Verify CS101 enrollments (using lecturer token)
 GET http://localhost:8080/api/v1/enrollments/course/1?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 33. Verify MATH201 enrollments
+### 43. Verify MATH201 enrollments (using lecturer token)
 GET http://localhost:8080/api/v1/enrollments/course/2?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 34. Verify CS301 enrollments
+### 44. Verify CS301 enrollments (using lecturer token)
 GET http://localhost:8080/api/v1/enrollments/course/3?page=0&size=10
+Authorization: Bearer {{lecturer_token}}
 
-### 35. Final admin dashboard check
+### 45. Final admin dashboard check (using admin token)
 GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{admin_token}}
 
-### 36. Final enrollment statistics
+### 46. Final enrollment statistics (using admin token)
 GET http://localhost:8080/api/v1/enrollments/stats
+Authorization: Bearer {{admin_token}}
+
+### ===========================================
+### PHASE 10: AUTHENTICATION TESTS
+### ===========================================
+
+### 47. Test unauthorized access (should fail)
+GET http://localhost:8080/api/v1/users
+# No Authorization header - should return 401
+
+### 48. Test student accessing admin endpoint (should fail)
+GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{student_token}}
+# Student token accessing admin endpoint - should return 403
+
+### 49. Test lecturer accessing admin endpoint (should fail)
+GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{lecturer_token}}
+# Lecturer token accessing admin endpoint - should return 403
+
+### 50. Test newly registered student accessing admin endpoint (should fail)
+GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{new_student_token}}
+# Newly registered student token accessing admin endpoint - should return 403
+
+### 51. Test token refresh
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "refreshToken": "{{admin_token}}"
+}
+
+### 52. Test current user info
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer {{admin_token}}
+
+### 53. Test newly registered student current user info
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer {{new_student_token}}
+
+### 54. Test logout
+POST http://localhost:8080/api/v1/auth/logout
+Authorization: Bearer {{admin_token}}

@@ -1,0 +1,171 @@
+### Authentication API Tests
+
+### 1. Register new student
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "New",
+  "lastName": "Student",
+  "email": "new.student@example.com",
+  "password": "password123",
+  "dateOfBirth": "2000-01-01"
+}
+
+### 2. Login with valid credentials
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+### 2. Login with invalid credentials
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "wrongpassword"
+}
+
+### 3. Get current user (requires authentication)
+GET http://localhost:8080/api/v1/auth/me
+Authorization: Bearer {{token}}
+
+### 4. Check if user has admin role
+GET http://localhost:8080/api/v1/auth/check-role/ADMIN
+Authorization: Bearer {{token}}
+
+### 5. Check if user has lecturer role
+GET http://localhost:8080/api/v1/auth/check-role/LECTURER
+Authorization: Bearer {{token}}
+
+### 6. Check if user has student role
+GET http://localhost:8080/api/v1/auth/check-role/STUDENT
+Authorization: Bearer {{token}}
+
+### 7. Change password (requires authentication)
+POST http://localhost:8080/api/v1/auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newpassword123"
+}
+
+### 8. Refresh token
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### 9. Logout
+POST http://localhost:8080/api/v1/auth/logout
+Authorization: Bearer {{token}}
+
+### 10. Test protected endpoint - Get all users (requires ADMIN or LECTURER role)
+GET http://localhost:8080/api/v1/users
+Authorization: Bearer {{token}}
+
+### 11. Test protected endpoint - Create user (requires ADMIN role)
+POST http://localhost:8080/api/v1/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "role": "STUDENT"
+}
+
+### 12. Test protected endpoint - Get all courses (requires ADMIN or LECTURER role)
+GET http://localhost:8080/api/v1/courses
+Authorization: Bearer {{token}}
+
+### 13. Test protected endpoint - Admin dashboard (requires ADMIN role)
+GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{token}}
+
+### 14. Test protected endpoint - Create lecturer (requires ADMIN role)
+POST http://localhost:8080/api/v1/lecturers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Dr. Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@example.com",
+  "department": "Computer Science",
+  "specialization": "Software Engineering"
+}
+
+### 15. Test protected endpoint - Get lecturer courses (requires ADMIN or LECTURER role)
+GET http://localhost:8080/api/v1/lecturers/1/courses
+Authorization: Bearer {{token}}
+
+### 16. Test protected endpoint - Create student (requires ADMIN or LECTURER role)
+POST http://localhost:8080/api/v1/students
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson",
+  "email": "alice.johnson@example.com",
+  "studentId": "STU001",
+  "major": "Computer Science",
+  "yearOfStudy": 2
+}
+
+### 17. Test protected endpoint - Get all students (requires ADMIN or LECTURER role)
+GET http://localhost:8080/api/v1/students
+Authorization: Bearer {{token}}
+
+### 18. Test protected endpoint - Enroll student in course (requires ADMIN, LECTURER, or STUDENT role)
+POST http://localhost:8080/api/v1/enrollments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "studentId": 1,
+  "courseId": 1,
+  "enrollmentDate": "2024-01-15"
+}
+
+### 19. Test protected endpoint - Get course enrollments (requires ADMIN or LECTURER role)
+GET http://localhost:8080/api/v1/enrollments/course/1
+Authorization: Bearer {{token}}
+
+### 20. Test protected endpoint - Update enrollment (requires ADMIN or LECTURER role)
+PUT http://localhost:8080/api/v1/enrollments/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "COMPLETED",
+  "grade": "A"
+}
+
+### 21. Test unauthorized access - Try to access admin endpoint without proper role
+GET http://localhost:8080/api/v1/admin/dashboard
+Authorization: Bearer {{studentToken}}
+
+### 22. Test unauthorized access - Try to create lecturer as student
+POST http://localhost:8080/api/v1/lecturers
+Authorization: Bearer {{studentToken}}
+Content-Type: application/json
+
+{
+  "firstName": "Dr. Unauthorized",
+  "lastName": "User",
+  "email": "unauthorized@example.com",
+  "department": "Test",
+  "specialization": "Test"
+}
