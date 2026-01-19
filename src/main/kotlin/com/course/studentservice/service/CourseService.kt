@@ -174,20 +174,29 @@ class CourseService(
             }
         }
         
-        val updatedCourse = course.copy(
+        // Prepare courseMetadata for JSONB - ensure it's valid JSON if provided
+        val courseMetadata = request.courseMetadata?.let { 
+            if (it.startsWith("{") || it.startsWith("[")) it else "{\"note\":\"$it\"}"
+        }
+        
+        // Use native query to handle JSONB properly
+        courseRepository.updateCourseWithJsonb(
+            courseId = id,
             courseCode = request.courseCode ?: course.courseCode,
             title = request.title ?: course.title,
             description = request.description ?: course.description,
             credits = request.credits ?: course.credits,
-            lecturer = lecturer,
+            lecturerId = lecturer?.lecturerId,
             startDate = startDate,
             endDate = endDate,
             capacity = request.capacity ?: course.capacity,
-            courseMetadata = request.courseMetadata ?: course.courseMetadata
+            courseMetadata = courseMetadata
         )
         
-        val savedCourse = courseRepository.save(updatedCourse)
-        return mapToDto(savedCourse)
+        // Find the updated course to return as DTO
+        val updatedCourse = courseRepository.findById(id)
+            .orElseThrow { IllegalStateException("Failed to update course") }
+        return mapToDto(updatedCourse)
     }
     
     fun deleteCourse(id: Long) {

@@ -48,4 +48,34 @@ interface CourseRepository : JpaRepository<Course, Long> {
         @Param("courseMetadata") courseMetadata: String?,
         @Param("createdAt") createdAt: java.time.LocalDateTime
     ): Int
+    
+    @Modifying
+    @Query(value = """
+        UPDATE courses 
+        SET course_code = :courseCode,
+            title = :title,
+            description = :description,
+            credits = :credits,
+            lecturer_id = :lecturerId,
+            start_date = :startDate,
+            end_date = :endDate,
+            capacity = :capacity,
+            course_metadata = CASE 
+                WHEN :courseMetadata IS NULL THEN course_metadata 
+                ELSE CAST(:courseMetadata AS jsonb) 
+            END
+        WHERE course_id = :courseId
+    """, nativeQuery = true)
+    fun updateCourseWithJsonb(
+        @Param("courseId") courseId: Long,
+        @Param("courseCode") courseCode: String,
+        @Param("title") title: String?,
+        @Param("description") description: String?,
+        @Param("credits") credits: Int?,
+        @Param("lecturerId") lecturerId: Long?,
+        @Param("startDate") startDate: LocalDate?,
+        @Param("endDate") endDate: LocalDate?,
+        @Param("capacity") capacity: Int?,
+        @Param("courseMetadata") courseMetadata: String?
+    ): Int
 }
